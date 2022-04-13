@@ -110,22 +110,22 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
     RI_sum = 0  #total energy consumption
     SL = 0
     fre = list(fre)
-    '''-------------task mapping--------------'''
+    #-------------task mapping--------------
     for task in PL:  #the currently scheduled "task"
         STALL_cur = []
         EC_cur = []
-        '''------------- < entry task > --------------'''
+        #------------- < entry task > --------------
         avaiMT_cur = copy.deepcopy(avaiMT)
         M_index = list(range(M))
         M_FRE = [M_index, avaiMT_cur]
-        '''put core and avaiMT in earliest available time increasing order'''
+        #put core and avaiMT in earliest available time increasing order
         for k in range(1, len(M_FRE[1])):
             for j in range(0, len(M_FRE[1])-k):
                 if M_FRE[1][j]> M_FRE[1][j+1]:
-                    '''execution %time'''
+                    #'''execution %time'''
                     M_FRE[1][j], M_FRE[1][j +1] = M_FRE[1][j + 1], M_FRE[1][j]
                     M_FRE[0][j], M_FRE[0][j +1] = M_FRE[0][j + 1], M_FRE[0][j]
-        '''1)find core/fre for ori and dup'''
+        #1)find core/fre for ori and dup
         if Pred[task] == []:  #entry task  
             AC_F_sum = []
             for element in AC_F[task]:
@@ -137,7 +137,7 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                     core_dup_index = M_FRE[0][j]
                     for item in AC_F[task]:
                         if item[1] ==0 and item[0] == FTC[core_ori_index]:  #only ori. is executed
-                            '''2)STALL of ori'''
+                            #2)STALL of ori
                             fre_ori = FTC[core_ori_index]
                             st_ori = avaiMT[core_ori_index]
                             fre_ori_index = fre.index(fre_ori)
@@ -150,14 +150,14 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(st_ori)  #ft^d
                             STALL_cur.append(core_ori_index)  #theta^d
                             EC_cur.append(0)
-                            '''RI'''
+                            #RI
                             if WCEC0[task] != 0:
                                 fi_ori = -lamda0 *10**(d0*(max(fre)-fre_ori)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_ori)
                                 RI.append( np.e**(fi_ori) - Rth0[task])
                             bfound = True
                             break
                         if item[1] == 0 and item[0] == FTC[core_dup_index]:  #choosing the core with earliest available time
-                            '''2)STALL of ori'''
+                            #2)STALL of ori
                             core_ori_index = core_dup_index
                             fre_ori = FTC[core_ori_index]
                             st_ori = avaiMT[core_ori_index]
@@ -171,14 +171,14 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(core_ori_index)  #theta^d
                             EC_cur.append(energy[task][fre_ori_index])
                             EC_cur.append(0)
-                            '''RI'''
+                            #RI
                             if WCEC0[task] != 0:
                                 fi_ori = -lamda0 *10**(d0*(max(fre)-fre_ori)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_ori)
                                 RI.append( np.e**(fi_ori) - Rth0[task])
                             bfound = True
                             break
                         if item[1] !=0 and item[0]+item[1] == FTC[core_ori_index]+FTC[core_dup_index]:  #both ori and dup. are executed
-                            '''2)STALL of ori'''
+                            #2)STALL of ori
                             fre_ori = FTC[core_ori_index]
                             st_ori = avaiMT[core_ori_index]
                             fre_ori_index = fre.index(fre_ori)
@@ -187,7 +187,7 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(st_ori+exetime[task][fre_ori_index])  #ft^o
                             STALL_cur.append(core_ori_index)  #theta^o
                             EC_cur.append(energy[task][fre_ori_index])
-                            '''3)STALL of dup'''
+                            #3)STALL of dup
                             fre_dup = FTC[core_dup_index]
                             st_dup = avaiMT[core_dup_index]
                             fre_dup_index = fre.index(fre_dup)
@@ -196,7 +196,7 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(st_dup+exetime[task][fre_dup_index])  #ft^d
                             STALL_cur.append(core_dup_index)  #theta^d
                             EC_cur.append(energy[task][fre_dup_index])
-                            '''RI'''
+                            #RI
                             if WCEC0[task] != 0:
                                 fi_ori = -lamda0 *10**(d0*(max(fre)-fre_ori)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_ori)
                                 fi_dup = -lamda0 *10**(d0*(max(fre)-fre_dup)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_dup)
@@ -208,8 +208,8 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                 if bfound:
                     break
         else:  
-            '''------------- < other tasks > --------------'''
-            '''#1)#-- predecessors: update avaiMT for all cores--'''
+            #------------- < other tasks > --------------
+            ##1)#-- predecessors: update avaiMT for all cores--
             max_pred = 0
             for k in Pred[task]:
                 task_index = PL.index(k)
@@ -220,14 +220,14 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                     avaiMT_cur[m] = max_pred
             M_index = list(range(M))
             M_FRE = [M_index, avaiMT_cur]
-            '''put core and avaiMT in earliest available time increasing order'''
+            #put core and avaiMT in earliest available time increasing order
             for k in range(1, len(M_FRE[1])):
                     for j in range(0, len(M_FRE[1])-k):
                         if M_FRE[1][j]> M_FRE[1][j+1]:
-                            '''execution %time'''
+                            #execution %time
                             M_FRE[1][j], M_FRE[1][j + 1] = M_FRE[1][j + 1], M_FRE[1][j]
                             M_FRE[0][j], M_FRE[0][j + 1] = M_FRE[0][j + 1], M_FRE[0][j]
-            '''2)find core/fre for ori and dup'''
+            #2)find core/fre for ori and dup
             AC_F_sum = []
             for element in AC_F[task]:
                 AC_F_sum.append(element[0]+element[1])
@@ -238,7 +238,7 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                     core_dup_index = M_FRE[0][j]
                     for item in AC_F[task]:
                         if item[1] == 0 and item[0] == FTC[core_ori_index]:  #choosing the core earliest available time
-                            '''2)STALL of ori'''
+                            #2)STALL of ori
                             fre_ori = FTC[core_ori_index]
                             if max_pred <= avaiMT[core_ori_index]:
                                 st_ori = avaiMT[core_ori_index]
@@ -254,14 +254,14 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(core_ori_index)  #theta^d
                             EC_cur.append(energy[task][fre_ori_index])
                             EC_cur.append(0)
-                            '''RI'''
+                            #RI
                             if WCEC0[task] != 0:
                                 fi_ori = -lamda0 *10**(d0*(max(fre)-fre_ori)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_ori)
                                 RI.append( np.e**(fi_ori) - Rth0[task])
                             bfound = True
                             break
                         if item[1] == 0 and item[0] == FTC[core_dup_index]:  #choosing the core earliest available time
-                            '''2)STALL of ori'''
+                            #2)STALL of ori
                             core_ori_index = core_dup_index
                             fre_ori = FTC[core_ori_index]
                             if max_pred <= avaiMT[core_ori_index]:
@@ -278,14 +278,14 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(core_ori_index)  #theta^d
                             EC_cur.append(energy[task][fre_ori_index])
                             EC_cur.append(0)
-                            '''RI'''
+                            #RI
                             if WCEC0[task] != 0:
                                 fi_ori = -lamda0 *10**(d0*(max(fre)-fre_ori)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_ori)
                                 RI.append( np.e**(fi_ori) - Rth0[task])
                             bfound = True
                             break
                         if item[1] != 0 and item[0]+item[1] == FTC[core_ori_index]+FTC[core_dup_index]:  #both ori and dup are executed
-                            '''2)STALL of ori'''
+                            #2)STALL of ori
                             fre_ori = FTC[core_ori_index]
                             if max_pred <= avaiMT[core_ori_index]:
                                 st_ori = avaiMT[core_ori_index]
@@ -297,7 +297,7 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(st_ori+exetime[task][fre_ori_index])  #ft^o
                             STALL_cur.append(core_ori_index)  #theta^o
                             EC_cur.append(energy[task][fre_ori_index])
-                            '''4)STALL of dup'''
+                            #4)STALL of dup
                             fre_dup = FTC[core_dup_index]
                             if max_pred <= avaiMT[core_dup_index]:
                                 st_dup = avaiMT[core_dup_index]
@@ -309,7 +309,7 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
                             STALL_cur.append(st_dup+exetime[task][fre_dup_index])  #ft^d
                             STALL_cur.append(core_dup_index)  #theta^d
                             EC_cur.append(energy[task][fre_dup_index])
-                            '''RI'''
+                            #RI
                             if WCEC0[task] != 0:
                                 fi_ori = -lamda0 *10**(d0*(max(fre)-fre_ori)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_ori)
                                 fi_dup = -lamda0 *10**(d0*(max(fre)-fre_dup)/(max(fre)-min(fre)) )*(WCEC0[task]/fre_dup)
@@ -334,16 +334,16 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
 # In[1]:
 
 
-'''bubble sort: total energy increasing order'''
+#-------------<bubble sort: total energy increasing order>-----------
 def bubbleSort_energy_increasing(arr1, arr2, arr3):  #arr1 is PC_E, arr2 is PC_F, arr3 is PC_T
     for k in range(1, len(arr1)):
         for j in range(0, len(arr1)-k):
             if arr1[j][0] + arr1[j][1] > arr1[j+1][0] + arr1[j+1][1]:
-                '''energy'''
+                #energy
                 arr1[j], arr1[j+1] = arr1[j+1], arr1[j]
-                '''frequency'''
+                #frequency
                 arr2[j], arr2[j+1] = arr2[j+1], arr2[j]
-                '''execution time'''
+                #execution time
                 arr3[j], arr3[j+1] = arr3[j+1], arr3[j]
     return(arr1, arr2, arr3)
 
