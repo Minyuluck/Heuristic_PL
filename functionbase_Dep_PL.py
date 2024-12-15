@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 from time import time
 import inspect
 # DEBUG = True;  #True to print all the debug, false to not print them
@@ -84,9 +78,6 @@ def computeAllListsBySumFromSet(sets,M):
 def debugList(liste):
     for i in range(len(liste)):
         debug(str(liste[i]))
-
-
-# In[1]:
 
 
 import numpy as np
@@ -329,9 +320,6 @@ def task_mapping(avaiMT, M, Pred, PL, AC_F, FTC, exetime, energy, PCO_F, WCEC0, 
     RI_average = RI_sum/len(RI)
     SL = max(avaiMT)
     return STALL, EC, EC_sum, SL, RI, RI_average
-
-
-# In[1]:
 
 
 #-------------<bubble sort: total energy increasing order>-----------
